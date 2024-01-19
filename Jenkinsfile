@@ -1,13 +1,17 @@
 pipeline {
     agent any
     
-    tools { maven 'maven3.6'
-            jdk 'jdk11'
-            
+    tools {
+        maven 'maven3'
+        jdk 'jdk17'
+    }
+    
+    environment {
+        SCANNER_HOME = tool 'sonar-scanner'
     }
 
     stages {
-        stage('git checkout') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Abbeydauda20/shack-project.git'
             }
@@ -16,7 +20,20 @@ pipeline {
         stage('Compile') {
             steps {
                 sh "mvn compile"
-                
+            }
+        }
+        
+        stage('Unit Tests') {
+            steps {
+                sh "mvn test -DskipTests=true"
+            }
+        }
+        
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv(credentialsId: 'sonar') {
+                    sh "$SCANNER_HOME/bin/sonar-scanner -Dsonar.projectKey=EKART -Dsonar.projectName=EKART -Dsonar.java.binaries=."
+                }
             }
         }
         
@@ -25,7 +42,5 @@ pipeline {
                 echo 'Hello World'
             }
         }
-        
-        
     }
 }
