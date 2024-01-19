@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('git checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/jaiswaladi246/Ekart.git'
+                git branch: 'main', url: 'https://github.com/Abbeydauda20/shack-project.git'
             }
         }
         
